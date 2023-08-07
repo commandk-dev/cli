@@ -1,2 +1,1 @@
-# cli
-CLI
+# CommandK CLI
