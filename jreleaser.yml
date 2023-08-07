@@ -1,0 +1,51 @@
+project:
+  name: cmdk
+  description: cmdk is the command line client to interact with the CommandK platform
+  links:
+    homepage: https://github.com/commandk-dev/cli
+  java:
+    groupId: dev.commandk
+    version: 17
+  inceptionYear: 2023
+  stereotype: cli
+
+release:
+  github:
+    branch: main
+    overwrite: true
+    sign: false
+    changelog:
+      formatted: 'ALWAYS'
+      format: '- {{commitShortHash}} {{commitTitle}}'
+      preset: 'conventional-commits'
+      contributors:
+        format: '- {{contributorName}}{{#contributorUsernameAsLink}} ({{.}}){{/contributorUsernameAsLink}}'
+
+signing:
+  active: never
+  armored: true
+
+assemble:
+  archive:
+    cmdk-cli-client:
+      active: ALWAYS
+      attachPlatform: true
+      fileSets:
+        - input: 'build/bin/native/releaseExecutable'
+          output: 'bin'
+          includes: [ 'cli.kexe' ]
+          mapper:
+            type: 'identity'
+            includes:
+              - pattern: 'cli.kexe'
+                to: 'cmdk-${platform}'
+
+environment:
+  properties:
+    artifactsDir: out/jreleaser/cmdk/archive
+
+distributions:
+  cmdk:
+    artifacts:
+      - path: "{{artifactsDir}}/cmdk-{{platform}}"
+        platform: "linux-x86_64"
