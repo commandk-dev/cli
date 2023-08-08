@@ -44,7 +44,7 @@ jobs:
         with:
           arguments: assemble
         env:
-          JRELEASER_PROJECT_VERSION: ${{ github.ref_name }}
+          JRELEASER_PROJECT_VERSION: "0.0.1"
           JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JRELEASER_PLATFORM_OVERRIDE: ${{ matrix.job.jreleaser_platform }}
 
