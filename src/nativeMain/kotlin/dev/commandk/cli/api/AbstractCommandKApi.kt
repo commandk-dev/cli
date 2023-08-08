@@ -1,6 +1,5 @@
 package dev.commandk.cli.api
 
-import arrow.core.Either
 import dev.commandk.cli.common.CommonEnvironmentVars
 import dev.commandk.cli.context.AccessAuthorizationParameters
 import dev.commandk.cli.context.CommonContext
@@ -16,9 +15,7 @@ import io.ktor.serialization.kotlinx.json.json
 import io.ktor.utils.io.core.use
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.toKString
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import platform.posix.getenv
 
@@ -48,7 +45,15 @@ abstract class AbstractCommandKApi(
 
     private val AccessTokenHeaderPlugin = createClientPlugin("AccessTokenHeaderPlugin") {
         onRequest { request, _ ->
-            val endpoint = Url(commonContext.apiEndpoint)
+
+            //If there is no scheme present, resolve to a default scheme
+            val resolvedApiEndpoint = if(!commonContext.apiEndpoint.contains("://")) {
+               "https://${commonContext.apiEndpoint}"
+            } else {
+                commonContext.apiEndpoint
+            }
+
+            val endpoint = Url(resolvedApiEndpoint)
             request.url.host = endpoint.host
             request.url.port = endpoint.port
             request.url.protocol = endpoint.protocol
