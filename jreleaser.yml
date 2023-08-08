@@ -38,8 +38,7 @@ assemble:
       attachPlatform: true
       fileSets:
         - input: 'build/bin/native/debugExecutable'
-          output: 'bin'
-          includes: [ 'cmdk-${platform}' ]
+          includes: [ 'cmdk-*' ]
 
 environment:
   properties:
