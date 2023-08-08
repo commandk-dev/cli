@@ -7,6 +7,8 @@ project:
     - Rahul Jain
   copyright: CommandK, Inc
   website: https://commandk.dev
+  license: APACHE-2.0
+  docsUrl: https://github.com/commandk-dev/java-sdk
   java:
     groupId: dev.commandk
     version: 17
