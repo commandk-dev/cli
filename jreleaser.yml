@@ -48,7 +48,7 @@ environment:
 distributions:
   cmdk:
     artifacts:
-      - path: "{{artifactsDir}}/cmdk-linux-x86_64"
+      - path: "{{artifactsDir}}/cmdk-cli-client-{{projectVersion}}-linux-x86_64.zip"
         platform: "linux-x86_64"
-      - path: "{{artifactsDir}}/cmdk-osx-x86_64"
+      - path: "{{artifactsDir}}/cmdk-cli-client-{{projectVersion}}-osx-x86_64.zip"
         platform: "osx-x86_64"
