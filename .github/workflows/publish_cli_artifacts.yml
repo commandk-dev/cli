@@ -2,7 +2,7 @@ name: Publish CLI Artifacts
 on:
   push:
     tags:
-      - '[0-9]+.[0-9]+.[0-9]+*' # 0.0.1 - this syntax of tags is supported
+      - 'v[0-9]+.[0-9]+.[0-9]+*' # v0.0.1 - this syntax of tags is supported
 
 jobs:
   build_and_assemble:
@@ -41,12 +41,18 @@ jobs:
         run: |
           mv cli.kexe cmdk-osx-x86_64
 
+      - name: Determine the release version
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+        env:
+          GITHUB_REF: ${{ github.ref }}
+
       - name: Assemble (rename etc) the binaries
         uses: jreleaser/release-action@v2
         with:
           arguments: assemble
         env:
-          JRELEASER_PROJECT_VERSION: ${{ github.ref_name }}
+          JRELEASER_PROJECT_VERSION: ${{ env.VERSION }}
           JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JRELEASER_PLATFORM_OVERRIDE: ${{ matrix.job.jreleaser_platform }}
 
@@ -72,11 +78,17 @@ jobs:
         uses: actions/download-artifact@v3
         # the default directory where the artifacts get downloaded is `artifacts`
 
+      - name: Determine the release version
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+        env:
+          GITHUB_REF: ${{ github.ref }}
+
       - name: Release with grandeur
         uses: jreleaser/release-action@v2
         with:
           arguments: full-release -PartifactsDir=artifacts -PskipArchiveResolver
         env:
-          JRELEASER_PROJECT_VERSION: ${{ github.ref_name }}
+          JRELEASER_PROJECT_VERSION: ${{ env.VERSION }}
           JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JRELEASER_PLATFORM_OVERRIDE: ${{ matrix.job.jreleaser_platform }}
