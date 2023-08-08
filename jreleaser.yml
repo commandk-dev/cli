@@ -31,7 +31,7 @@ assemble:
       active: ALWAYS
       attachPlatform: true
       fileSets:
-        - input: 'build/bin/native/releaseExecutable'
+        - input: 'build/bin/native/debugExecutable'
           output: 'bin'
           includes: [ 'cmdk-${platform}' ]
 

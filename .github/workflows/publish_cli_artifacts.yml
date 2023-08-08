@@ -29,13 +29,13 @@ jobs:
 
       - name: Rename the Linux binary appropriately
         if: matrix.os == 'ubuntu-latest'
-        working-directory: ./build/bin/native/releaseExecutable
+        working-directory: ./build/bin/native/debugExecutable
         run: |
           mv cli.kexe cmdk-linux-x86_64
 
       - name: Rename the macOS binary appropriately
         if: matrix.os == 'macos-13'
-        working-directory: ./build/bin/native/releaseExecutable
+        working-directory: ./build/bin/native/debugExecutable
         run: |
           mv cli.kexe cmdk-osx-x86_64
 
