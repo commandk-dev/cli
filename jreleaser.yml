@@ -33,12 +33,7 @@ assemble:
       fileSets:
         - input: 'build/bin/native/releaseExecutable'
           output: 'bin'
-          includes: [ 'cli.kexe' ]
-          mapper:
-            type: 'identity'
-            includes:
-              - pattern: 'cli.kexe'
-                to: 'cmdk-${platform}'
+          includes: [ 'cmdk-${platform}' ]
 
 environment:
   properties:
@@ -47,7 +42,7 @@ environment:
 distributions:
   cmdk:
     artifacts:
-      - path: "{{artifactsDir}}/cmdk-{{platform}}"
+      - path: "{{artifactsDir}}/cmdk-linux-x86_64"
         platform: "linux-x86_64"
-      - path: "{{artifactsDir}}/cmdk-{{platform}}"
+      - path: "{{artifactsDir}}/cmdk-osx-x86_64"
         platform: "osx-x86_64"

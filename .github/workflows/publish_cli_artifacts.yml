@@ -27,6 +27,18 @@ jobs:
       - name: Build Binary
         run: ./gradlew linkDebugExecutableNative
 
+      - name: Rename the Linux binary appropriately
+        if: matrix.os == 'ubuntu-latest'
+        working-directory: ./build/bin/native/releaseExecutable
+        run: |
+          mv cli.kexe cmdk-linux-x86_64
+
+      - name: Rename the macOS binary appropriately
+        if: matrix.os == 'macos-13'
+        working-directory: ./build/bin/native/releaseExecutable
+        run: |
+          mv cli.kexe cmdk-osx-x86_64
+
       - name: Assemble (rename etc) the binaries
         uses: jreleaser/release-action@v2
         with:
