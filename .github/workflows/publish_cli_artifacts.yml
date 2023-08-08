@@ -54,7 +54,7 @@ jobs:
           retention-days: 1
           name: artifacts
           path: |
-            out/jreleaser/cmdk/archive/*.zip
+            out/jreleaser/assemble/cmdk-cli-client/archive/*.zip
 
   release:
     needs: [ build_and_assemble ]
