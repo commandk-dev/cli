@@ -3,6 +3,10 @@ project:
   description: cmdk is the command line client to interact with the CommandK platform
   links:
     homepage: https://github.com/commandk-dev/cli
+  authors:
+    - Rahul Jain
+  copyright: CommandK, Inc
+  website: https://commandk.dev
   java:
     groupId: dev.commandk
     version: 17
