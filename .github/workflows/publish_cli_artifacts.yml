@@ -1,6 +1,8 @@
 name: Publish CLI Artifacts
 on:
-  workflow_dispatch:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+*' # v0.0.1 - this syntax of tags is supported
 
 jobs:
   build_and_assemble:
@@ -44,7 +46,7 @@ jobs:
         with:
           arguments: assemble
         env:
-          JRELEASER_PROJECT_VERSION: "0.0.1"
+          JRELEASER_PROJECT_VERSION: ${{ github.ref_name }}
           JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JRELEASER_PLATFORM_OVERRIDE: ${{ matrix.job.jreleaser_platform }}
 
@@ -75,6 +77,6 @@ jobs:
         with:
           arguments: full-release -PartifactsDir=artifacts -PskipArchiveResolver
         env:
-          JRELEASER_PROJECT_VERSION: "0.0.1"
+          JRELEASER_PROJECT_VERSION: ${{ github.ref_name }}
           JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JRELEASER_PLATFORM_OVERRIDE: ${{ matrix.job.jreleaser_platform }}
