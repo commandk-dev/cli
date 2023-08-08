@@ -3,6 +3,12 @@ project:
   description: cmdk is the command line client to interact with the CommandK platform
   links:
     homepage: https://github.com/commandk-dev/cli
+  authors:
+    - Rahul Jain
+  copyright: CommandK, Inc
+  website: https://commandk.dev
+  license: APACHE-2.0
+  docsUrl: https://github.com/commandk-dev/java-sdk
   java:
     groupId: dev.commandk
     version: 17
@@ -31,14 +37,8 @@ assemble:
       active: ALWAYS
       attachPlatform: true
       fileSets:
-        - input: 'build/bin/native/releaseExecutable'
-          output: 'bin'
-          includes: [ 'cli.kexe' ]
-          mapper:
-            type: 'identity'
-            includes:
-              - pattern: 'cli.kexe'
-                to: 'cmdk-${platform}'
+        - input: 'build/bin/native/debugExecutable'
+          includes: [ 'cmdk-*' ]
 
 environment:
   properties:
@@ -47,5 +47,7 @@ environment:
 distributions:
   cmdk:
     artifacts:
-      - path: "{{artifactsDir}}/cmdk-{{platform}}"
+      - path: "{{artifactsDir}}/cmdk-cli-client-{{projectVersion}}-linux-x86_64.zip"
         platform: "linux-x86_64"
+      - path: "{{artifactsDir}}/cmdk-cli-client-{{projectVersion}}-osx-x86_64.zip"
+        platform: "osx-x86_64"

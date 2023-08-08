@@ -1,12 +1,14 @@
 name: Publish CLI Artifacts
 on:
-  workflow_dispatch:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+*' # v0.0.1 - this syntax of tags is supported
 
 jobs:
   build_and_assemble:
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [macos-13, ubuntu-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -19,15 +21,32 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
 
+      - name: Install prerequisites for Linux runner
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get install libcurl4-openssl-dev
+
       - name: Build Binary
-        run: ./gradlew runDebugExecutableNative
+        run: ./gradlew linkDebugExecutableNative
+
+      - name: Rename the Linux binary appropriately
+        if: matrix.os == 'ubuntu-latest'
+        working-directory: ./build/bin/native/debugExecutable
+        run: |
+          mv cli.kexe cmdk-linux-x86_64
+
+      - name: Rename the macOS binary appropriately
+        if: matrix.os == 'macos-13'
+        working-directory: ./build/bin/native/debugExecutable
+        run: |
+          mv cli.kexe cmdk-osx-x86_64
 
       - name: Assemble (rename etc) the binaries
         uses: jreleaser/release-action@v2
         with:
           arguments: assemble
         env:
-          JRELEASER_PROJECT_VERSION: ${{ needs.precheck.outputs.VERSION }}
+          JRELEASER_PROJECT_VERSION: ${{ github.ref_name }}
           JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JRELEASER_PLATFORM_OVERRIDE: ${{ matrix.job.jreleaser_platform }}
 
@@ -37,7 +56,7 @@ jobs:
           retention-days: 1
           name: artifacts
           path: |
-            out/jreleaser/cmdk/archive/*.zip
+            out/jreleaser/assemble/cmdk-cli-client/archive/*.zip
 
   release:
     needs: [ build_and_assemble ]
@@ -58,5 +77,6 @@ jobs:
         with:
           arguments: full-release -PartifactsDir=artifacts -PskipArchiveResolver
         env:
-          JRELEASER_PROJECT_VERSION: ${{ needs.precheck.outputs.VERSION }}
-          JRELEASER_GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          JRELEASER_PROJECT_VERSION: ${{ github.ref_name }}
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          JRELEASER_PLATFORM_OVERRIDE: ${{ matrix.job.jreleaser_platform }}
