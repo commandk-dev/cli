@@ -94,11 +94,20 @@ class DefaultCommandKApi(
 
     override suspend fun getRenderedSecrets(applicationName: String, commandKEnvironment: CommandKEnvironment): Either<NetworkError, CommandKAppRenderedSecrets> {
         return apiCall {
-            get("/apps/${applicationName}/secrets/rendered"){
+            val response = get("/apps/${applicationName}/secrets/rendered"){
                 parameter("environment", commandKEnvironment.id)
                 parameter("mode", "Full")
-            }.body<CommandKAppRenderedSecrets>()
-                .right()
+            }
+
+            if (response.status.value in 200 .. 299) {
+                response.body<CommandKAppRenderedSecrets>()
+                    .right()
+            } else {
+                NetworkError.GenericNetworkError("Received an error from the server, could not fetch" +
+                    " environments status=${response.status.value}. Server response - ${decodeResponseError(response)}"
+                )
+                    .left()
+            }
 
         }
     }

@@ -6,6 +6,7 @@ import arrow.core.right
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
 import com.github.ajalt.clikt.parameters.arguments.argument
+import com.github.ajalt.clikt.parameters.arguments.multiple
 import com.github.ajalt.clikt.parameters.groups.defaultByName
 import com.github.ajalt.clikt.parameters.groups.groupChoice
 import com.github.ajalt.clikt.parameters.options.option
@@ -28,7 +29,7 @@ import okio.FileSystem
 import okio.Path.Companion.toPath
 
 class RunCommand(
-    private val commandKApiProvider: (CommonContext) -> CommandKApi
+    private val commandKApiProvider: (CommonContext) -> CommandKApi,
 ) : CliktCommand("Fetch secrets, and invoke the application runner", name = "run") {
     private val commonContext by requireObject<CommonContext>()
     private val formatUtil = FormatUtil()
@@ -36,10 +37,9 @@ class RunCommand(
     private val environment by environmentOption()
     private val applicationSubType by subTypeOption()
     private val identifierType by identifierTypeOption()
-    private val applicationRunCommand by option(
-        "--command",
+    private val command by argument(
         help = "The command to run the application",
-    ).required()
+    ).multiple()
     private val commonUtils = CommonUtils(commandKApiProvider)
 
 
@@ -79,7 +79,7 @@ class RunCommand(
                     val fileFormat = (runType as FileStoreRunType).fileFormat
                     val fileName = (runType as FileStoreRunType).fileName
                     val secrets = formatUtil.formatSecrets(renderedSecrets.secrets, fileFormat)
-                    writeToFile(fileName, secrets).bind()
+                    commonUtils.writeToFile(fileName, secrets).bind()
                     cc().writeLine("✅ Secrets fetched and written to file ${TextColors.green(fileName)}")
                 }
 
@@ -88,15 +88,15 @@ class RunCommand(
                 }
             }
 
-            val args = applicationRunCommand.split(" ")
+            val args = command
             val command = args.first()
             val commandArgs = args.drop(1)
             Command(command)
                 .let {
                     when (runType) {
-                        is EnvVarRunType -> it.envs(envs = renderedSecrets.secrets.map { (key, value) ->
-                            key to value
-                        }.toTypedArray())
+                        is EnvVarRunType -> it.envs(envs = renderedSecrets.secrets.map { renderedSecret ->
+                            renderedSecret.key to renderedSecret.serializedValue
+                        }.also { println(">>>> ARG MAP - $it") }.toTypedArray())
 
                         is FileStoreRunType -> {
                             it
@@ -107,13 +107,5 @@ class RunCommand(
                 .spawn()
                 .wait()
         }
-    }
-
-    private fun writeToFile(filePath: String, data: String): Either<CliError, Unit> {
-        // Write the secrets to the specified file
-        FileSystem.SYSTEM.write(filePath.toPath()) {
-            writeUtf8(data)
-        }
-        return Unit.right()
     }
 }

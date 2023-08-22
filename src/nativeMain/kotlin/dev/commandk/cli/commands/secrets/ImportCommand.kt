@@ -12,6 +12,7 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.mordant.rendering.TextColors
 import dev.commandk.cli.api.CommandKApi
+import dev.commandk.cli.common.applicationNameArgument
 import dev.commandk.cli.common.environmentOption
 import dev.commandk.cli.common.identifierTypeOption
 import dev.commandk.cli.common.subTypeOption
@@ -29,9 +30,8 @@ class ImportCommand(
     private val commandKApiProvider: (CommonContext) -> CommandKApi
 ) : CliktCommand("Import multiple secrets to CommandK CLI", name = "import") {
     private val commonContext by requireObject<CommonContext>()
-    private val applicationName by argument(
-        help = "The application name to import the secrets to",
-        name = "application-name"
+    private val applicationName by applicationNameArgument(
+        help = "The name of the application to import secrets into"
     )
     private val environment by environmentOption()
     private val applicationSubType by subTypeOption()

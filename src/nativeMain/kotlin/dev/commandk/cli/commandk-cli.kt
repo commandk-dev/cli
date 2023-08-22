@@ -17,6 +17,7 @@ import dev.commandk.cli.common.CommonConfigurationValues
 import dev.commandk.cli.common.CommonEnvironmentVars
 import dev.commandk.cli.context.AccessAuthorizationParameters
 import dev.commandk.cli.context.CommonContext
+import dev.commandk.cli.helpers.RunUtils
 import dev.commandk.cli.services.ConfigPropertiesLoader
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.toKString
@@ -77,10 +78,16 @@ val subcommands = emptyList<CliktCommand>() +
         RunCommand(commandKApiProvider),
     )
 
+/*
 @OptIn(ExperimentalForeignApi::class)
 fun main(args: Array<String>) = CommandK(
     (
         (getenv("CMDK_CONFIG_FILE")?.toKString())
             ?: (getenv("HOME")?.let { "${it.toKString()}/.commandk.config.json" })
         ),
-).subcommands(subcommands).main(args)
+).subcommands(subcommands).main(args)*/
+
+fun main(args: Array<String>) {
+    val ru = RunUtils()
+    ru.run(listOf("node", *listOf("index.js").toTypedArray(), null), listOf("LOL", "value", null))
+}

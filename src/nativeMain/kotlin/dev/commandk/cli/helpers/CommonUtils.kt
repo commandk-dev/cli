@@ -9,6 +9,8 @@ import dev.commandk.cli.context.CommonContext
 import dev.commandk.cli.models.CentralDataError
 import dev.commandk.cli.models.CliError
 import dev.commandk.cli.models.CommandKEnvironment
+import okio.FileSystem
+import okio.Path.Companion.toPath
 
 class CommonUtils(
     private val commandKApiProvider: (CommonContext) -> CommandKApi
@@ -22,5 +24,13 @@ class CommonUtils(
                 environments.find { it.name == environment || it.slug == environment }
             }
             .flatMap { it?.right() ?: CentralDataError.EnvironmentNotFound("name:$environment").left() }
+    }
+
+    fun writeToFile(filePath: String, data: String): Either<CliError, Unit> {
+        // Write the secrets to the specified file
+        FileSystem.SYSTEM.write(filePath.toPath()) {
+            writeUtf8(data)
+        }
+        return Unit.right()
     }
 }

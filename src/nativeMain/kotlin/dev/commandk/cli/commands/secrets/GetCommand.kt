@@ -8,6 +8,7 @@ import arrow.core.right
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
 import dev.commandk.cli.api.CommandKApi
+import dev.commandk.cli.common.applicationNameArgument
 import dev.commandk.cli.common.applicationNameOption
 import dev.commandk.cli.common.environmentOption
 import dev.commandk.cli.common.identifierTypeOption
@@ -27,7 +28,9 @@ class GetCommand(
     private val commonContext by requireObject<CommonContext>()
     private val formatUtil = FormatUtil()
     private val environment by environmentOption()
-    private val applicationName by applicationNameOption()
+    private val applicationName by applicationNameArgument(
+        help = "The application name to fetch secrets for"
+    )
     private val outputFormat by outputFormatOption()
     private val identifierType by identifierTypeOption()
     private val applicationSubType by subTypeOption()
