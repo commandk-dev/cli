@@ -8,11 +8,14 @@ to a native executable. The CLI is available for Linux, and macOS.
 2. After downloading the ZIP file, extract its contents using the following command (replace <file> with the actual downloaded file name):
     
     ```shell
-    tar -xvf /path/to/archive.tar.gz -C /path/to/directory
+    $ tar -xvf /path/to/archive.tar.gz -C /path/to/directory
     ```
    
 3. Create a symlink to the `cmdk` executable in the `bin` directory of the extracted contents:
 
     ```shell
-    sudo ln -s /path/to/directory/cmdk /usr/local/bin/cmdk
+    $ sudo ln -s /path/to/directory/cmdk /usr/local/bin/cmdk
     ```
+
+## Configuration 
+
