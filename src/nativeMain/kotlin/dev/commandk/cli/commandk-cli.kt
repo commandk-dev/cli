@@ -13,6 +13,7 @@ import dev.commandk.cli.commands.TestCommandk
 import dev.commandk.cli.commands.secrets.GetCommand
 import dev.commandk.cli.commands.secrets.RunCommand
 import dev.commandk.cli.commands.secrets.SecretsCommand
+import dev.commandk.cli.common.CommonConfigurationValues
 import dev.commandk.cli.common.CommonEnvironmentVars
 import dev.commandk.cli.context.AccessAuthorizationParameters
 import dev.commandk.cli.context.CommonContext
@@ -31,13 +32,17 @@ class CommandK(
     private val apiEndpoint by option(help = "The HTTPs endpoint for the CommandK API Server", envvar = CommonEnvironmentVars.ApiEndpoint)
         .required()
 
+    private val baseConfig = mapOf(
+        "apiEndpoint" to CommonConfigurationValues.DefaultApiEndpoint
+    )
+
     init {
         loadedConfig = configFileLocation?.let { configFile -> configPropertiesLoader.loadProperties(configFile) }
             ?: emptyMap()
 
         context {
             configFileLocation?.let {
-                valueSource = MapValueSource(loadedConfig)
+                valueSource = MapValueSource(baseConfig + loadedConfig)
             }
         }
     }
