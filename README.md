@@ -17,5 +17,26 @@ to a native executable. The CLI is available for Linux, and macOS.
     $ sudo ln -s /path/to/directory/cmdk /usr/local/bin/cmdk
     ```
 
-## Configuration 
+# Quick Start
 
+Getting an access token, storing in config file, and getting secrets for an application and running a command. Show how to get secrets for an application with an identifier
+
+# Getting Secrets
+
+# Running Commands with Secrets
+
+# Importing Secrets
+
+# Working with frameworks
+
+## Next.js
+
+## Spring
+
+# Configuring the CLI
+
+## Modes of configuration
+
+## Table of parameters
+
+# Auditing CLI Access
