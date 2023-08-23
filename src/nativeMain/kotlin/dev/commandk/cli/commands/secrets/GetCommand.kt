@@ -7,6 +7,8 @@ import arrow.core.raise.either
 import arrow.core.right
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
+import com.github.ajalt.clikt.parameters.options.option
+import com.github.ajalt.clikt.parameters.options.required
 import dev.commandk.cli.api.CommandKApi
 import dev.commandk.cli.common.applicationNameArgument
 import dev.commandk.cli.common.applicationNameOption
@@ -17,6 +19,7 @@ import dev.commandk.cli.common.subTypeOption
 import dev.commandk.cli.context.CommonContext
 import dev.commandk.cli.context.cc
 import dev.commandk.cli.context.executeCliCommand
+import dev.commandk.cli.helpers.CommonUtils
 import dev.commandk.cli.helpers.FormatUtil
 import dev.commandk.cli.models.CentralDataError
 import dev.commandk.cli.models.CliError
@@ -26,12 +29,17 @@ class GetCommand(
     private val commandKApiProvider: (CommonContext) -> CommandKApi
 ) : CliktCommand("Get Secrets for an app and environment", name = "get") {
     private val commonContext by requireObject<CommonContext>()
+    private val commonUtils = CommonUtils(commandKApiProvider)
     private val formatUtil = FormatUtil()
     private val environment by environmentOption()
     private val applicationName by applicationNameArgument(
         help = "The application name to fetch secrets for"
     )
     private val outputFormat by outputFormatOption()
+    private val outputFilename by option(
+        "--output-file-name",
+        help = "The name of the file to write secrets to"
+    ).required()
     private val identifierType by identifierTypeOption()
     private val applicationSubType by subTypeOption()
     override fun run() {
@@ -58,7 +66,9 @@ class GetCommand(
             ).bind()
 
             val secrets = formatUtil.formatSecrets(renderedSecrets.secrets, outputFormat)
-            cc().writeLine(secrets)
+            cc().writeLine("Writing fetched secrets to file `$outputFilename`")
+            commonUtils.writeToFile(outputFilename, secrets)
+                .bind()
         }
     }
 
