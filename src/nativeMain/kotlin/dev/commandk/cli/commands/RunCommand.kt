@@ -23,6 +23,8 @@ import dev.commandk.cli.helpers.FormatUtil
 import dev.commandk.cli.models.CliError
 import dev.commandk.cli.options.EnvVarRunType
 import dev.commandk.cli.options.FileStoreRunType
+import platform.posix.clearenv
+import platform.posix.setenv
 import platform.posix.system
 
 class RunCommand(
@@ -71,7 +73,7 @@ class RunCommand(
                 environment
             ).bind()
 
-            val envsPrefix = when (runType) {
+            val envsToPopulate = when (runType) {
                 is FileStoreRunType -> {
                     val fileFormat = (runType as FileStoreRunType).fileFormat
                     val fileName = (runType as FileStoreRunType).fileName
@@ -84,12 +86,20 @@ class RunCommand(
                 is EnvVarRunType ->  {
                     cc().writeLine("✅ Secrets fetched and will be set as environment variables")
                     renderedSecrets.secrets.map { renderedSecret ->
-                        "${renderedSecret.key}='${renderedSecret.serializedValue.replace("'", "'\\''")}'"
+                        renderedSecret.key to renderedSecret.serializedValue
                     }
                 }
-            }.joinToString(" ")
+            }
 
-            system("$envsPrefix ${command.joinToString(" ")}")
+            envsToPopulate.forEach {
+                setenv(it.first, it.second, 1)
+            }
+
+            try {
+                system(command.joinToString(" "))
+            } finally {
+                clearenv()
+            }
         }
     }
 }
