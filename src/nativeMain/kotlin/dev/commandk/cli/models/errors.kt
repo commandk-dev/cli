@@ -16,7 +16,8 @@ sealed class CentralDataError : CliError() {
     ) : CentralDataError()
 
     data class ApplicationNameNotUnique(
-        override val message: String = "The provided name for the application was not found to be unique, please specify a catalogAppSubType to narrow it down",
+        override val message: String = "The provided name for the application was not found to be unique, please" +
+            " specify --sub-type to narrow it down",
         override val cause: Exception? = null
     ) : CentralDataError()
 }

@@ -28,6 +28,8 @@ import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.util.Identity.decode
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonPrimitive
 import platform.posix.err
 
 class DefaultCommandKApi(
@@ -43,7 +45,8 @@ class DefaultCommandKApi(
             } else {
                 if (response.status.value == 400) {
                     try {
-                        val error = deserializeResponseError(response)["errorType"]?.toString()
+                        val error = (deserializeResponseError(response).get("errorType") as? JsonPrimitive)
+                            ?.content
                         if (error == "DataEntityNonSingular") {
                             CentralDataError.ApplicationNameNotUnique().left()
                         } else {

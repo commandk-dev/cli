@@ -33,7 +33,7 @@ class CommandK(
         .required()
 
     private val baseConfig = mapOf(
-        "apiEndpoint" to CommonConfigurationValues.DefaultApiEndpoint
+        "api-endpoint" to CommonConfigurationValues.DefaultApiEndpoint
     )
 
     init {
