@@ -1,8 +1,7 @@
-package dev.commandk.cli.commands.secrets
+package dev.commandk.cli.commands
 
 import arrow.core.Either
 import arrow.core.raise.either
-import arrow.core.right
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
 import com.github.ajalt.clikt.parameters.arguments.argument
@@ -10,7 +9,6 @@ import com.github.ajalt.clikt.parameters.arguments.multiple
 import com.github.ajalt.clikt.parameters.groups.defaultByName
 import com.github.ajalt.clikt.parameters.groups.groupChoice
 import com.github.ajalt.clikt.parameters.options.option
-import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.mordant.rendering.TextColors
 import com.kgit2.process.Command
 import dev.commandk.cli.api.CommandKApi
@@ -25,8 +23,7 @@ import dev.commandk.cli.helpers.FormatUtil
 import dev.commandk.cli.models.CliError
 import dev.commandk.cli.options.EnvVarRunType
 import dev.commandk.cli.options.FileStoreRunType
-import okio.FileSystem
-import okio.Path.Companion.toPath
+import platform.posix.system
 
 class RunCommand(
     private val commandKApiProvider: (CommonContext) -> CommandKApi,
@@ -74,38 +71,25 @@ class RunCommand(
                 environment
             ).bind()
 
-            when (runType) {
+            val envsPrefix = when (runType) {
                 is FileStoreRunType -> {
                     val fileFormat = (runType as FileStoreRunType).fileFormat
                     val fileName = (runType as FileStoreRunType).fileName
                     val secrets = formatUtil.formatSecrets(renderedSecrets.secrets, fileFormat)
                     commonUtils.writeToFile(fileName, secrets).bind()
                     cc().writeLine("✅ Secrets fetched and written to file ${TextColors.green(fileName)}")
+                    emptyList()
                 }
 
                 is EnvVarRunType ->  {
                     cc().writeLine("✅ Secrets fetched and will be set as environment variables")
-                }
-            }
-
-            val args = command
-            val command = args.first()
-            val commandArgs = args.drop(1)
-            Command(command)
-                .let {
-                    when (runType) {
-                        is EnvVarRunType -> it.envs(envs = renderedSecrets.secrets.map { renderedSecret ->
-                            renderedSecret.key to renderedSecret.serializedValue
-                        }.also { println(">>>> ARG MAP - $it") }.toTypedArray())
-
-                        is FileStoreRunType -> {
-                            it
-                        }
+                    renderedSecrets.secrets.map { renderedSecret ->
+                        "${renderedSecret.key}='${renderedSecret.serializedValue.replace("'", "'\\''")}'"
                     }
                 }
-                .args(args = commandArgs.toTypedArray())
-                .spawn()
-                .wait()
+            }.joinToString(" ")
+
+            system("$envsPrefix ${command.joinToString(" ")}")
         }
     }
 }
