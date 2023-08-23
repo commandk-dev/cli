@@ -1,6 +1,7 @@
 package dev.commandk.cli.api
 
 import arrow.core.Either
+import arrow.core.flatMap
 import arrow.core.left
 import arrow.core.right
 import com.github.ajalt.mordant.rendering.TextColors
@@ -11,10 +12,10 @@ import dev.commandk.cli.models.CliError
 import dev.commandk.cli.models.CommandKApp
 import dev.commandk.cli.models.CommandKAppRenderedSecrets
 import dev.commandk.cli.models.CommandKAppSecret
+import dev.commandk.cli.models.CommandKAppSecretDescriptor
 import dev.commandk.cli.models.CommandKAppSecretValue
 import dev.commandk.cli.models.CommandKCreateAppSecretRequest
 import dev.commandk.cli.models.CommandKEnvironment
-import dev.commandk.cli.models.CommandKEnvironmentScopedValue
 import dev.commandk.cli.models.CommandKEnvironments
 import dev.commandk.cli.models.CommandKKeyValueAppSecretValue
 import dev.commandk.cli.models.CommandKProviders
@@ -26,11 +27,8 @@ import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
-import io.ktor.util.Identity.decode
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
-import platform.posix.err
 
 class DefaultCommandKApi(
     private val commonContext: CommonContext,
@@ -126,17 +124,7 @@ class DefaultCommandKApi(
             val createAppSecretRequest = CommandKCreateAppSecretRequest(
                 name = secretName,
                 providerId = providerId,
-                environmentScopedValues = listOf(
-                    CommandKEnvironmentScopedValue(
-                        environment = commandKEnvironment,
-                        value = CommandKAppSecretValue(
-                            activity = "Create",
-                            kvAppSecretValue = CommandKKeyValueAppSecretValue(
-                                text = secretValue
-                            )
-                        )
-                    )
-                )
+                environmentScopedValues = listOf()
             )
 
             val response = post("/apps/${applicationId}/secrets") {
@@ -144,62 +132,57 @@ class DefaultCommandKApi(
                 headers.append("Content-Type", "application/json")
             }
 
-            if (response.status.value in 200..299) {
-                cc().writeLine("Wrote secret ${TextColors.green("[$secretName]")}")
-                Unit.right()
+            val secretId = if (response.status.value in 200..299) {
+                val createdAppSecretResponse = response.body<CommandKAppSecretDescriptor>()
+                cc().writeLine("Created secret ${TextColors.green("[$secretName] (id=${createdAppSecretResponse.id})")}, writing values")
+                createdAppSecretResponse.id.right()
             } else {
                 if (response.status.value == 409) {
-                    cc().writeLine("Secret ${TextColors.green("[$secretName]")} already exists, attempting to update values only")
-                    val entityIdToRetry = Json.decodeFromString<Map<String, String>>(response.body<String>())["entityId"]!!
-                    updateSecretValues(
-                        applicationId,
-                        entityIdToRetry,
-                        CommandKSetAppSecretValuesRequest(createAppSecretRequest.environmentScopedValues)
-                    )
+                    val existingSecretId = Json.decodeFromString<Map<String, String>>(response.body<String>())["entityId"]!!
+                    cc().writeLine("Secret ${TextColors.green("[$secretName] (id=${existingSecretId})")} already exists, updating values")
+                    existingSecretId.right()
                 } else {
                     cc().writeError("Failed to write secret ${TextColors.green("[$secretName]")}")
                     NetworkError.GenericNetworkError("Received an error from the server, status=${response.status.value}")
                         .left()
                 }
             }
+
+            secretId.flatMap { operativeSecretId ->
+                writeSecretValues(
+                    applicationId,
+                    secretName,
+                    operativeSecretId,
+                    commandKEnvironment.id,
+                    CommandKAppSecretValue(
+                        kvAppSecretValue = CommandKKeyValueAppSecretValue(
+                            text = secretValue
+                        ),
+                        activity = null
+                    )
+                )
+            }
         }
     }
 
-    private suspend fun updateSecretValues(
+    private suspend fun writeSecretValues(
         applicationId: String,
+        secretName: String,
         secretId: String,
-        setAppSecretValuesRequest: CommandKSetAppSecretValuesRequest
+        environmentId: String,
+        appSecretValue: CommandKAppSecretValue
     ) : Either<NetworkError, Unit> {
-        val existingSecretRequest = apiCall {
-            val response = get("/apps/${applicationId}/secrets/$secretId")
-            response.body<CommandKAppSecret>()
-        }
-
         return apiCall {
-            val response = put("/apps/${applicationId}/secrets/$secretId") {
-                setBody(
-                    existingSecretRequest.copy(
-                        environmentScopedValues = setAppSecretValuesRequest.environmentScopedValues.map { envScopedValue ->
-                            envScopedValue.copy(value = envScopedValue.value?.copy(
-                                activity = if (existingSecretRequest.environmentScopedValues.any {
-                                    it.environment.id == envScopedValue.environment.id && it.value != null
-                                }) {
-                                    "Update"
-                                } else {
-                                    "Create"
-                                }
-                            ))
-                        }
-                    )
-                )
+            val response = put("/apps/${applicationId}/secrets/$secretId/environments/$environmentId/values") {
+                setBody(appSecretValue)
                 headers.append("Content-Type", "application/json")
             }
 
             if (response.status.value in 200 .. 209) {
-                cc().writeLine("  Update/Set secret value for [${TextColors.green(existingSecretRequest.name)}]")
+                cc().writeLine("  Update/Set secret value for [${TextColors.green(secretName)}]")
                 Unit.right()
             } else {
-                cc().writeError("Failed to write secret ${TextColors.green("[${existingSecretRequest.name}]")}")
+                cc().writeError("Failed to write secret ${TextColors.green("[${secretName}]")}")
                 NetworkError.GenericNetworkError("Received an error from the server, status=${response.status.value}")
                     .left()
             }
