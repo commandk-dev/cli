@@ -391,6 +391,12 @@ $ cmdk run <application-name> --environment development -- php artisan serve
 
 ## .NET
 
+Simply use the CommandK CLI to execute your usual run command, an example for .NET is as shown below:
+
+```shell
+$ cmdk run <application-name> --environment development -- dotnet run
+```
+
 ## Spring boot
 
 Simply use the CommandK CLI to execute your usual run command. An example would be:
