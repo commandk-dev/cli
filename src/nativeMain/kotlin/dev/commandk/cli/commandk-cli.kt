@@ -84,9 +84,3 @@ fun main(args: Array<String>) = CommandK(
             ?: (getenv("HOME")?.let { "${it.toKString()}/.commandk.config.json" })
         ),
 ).subcommands(subcommands).main(args)
-
-/*
-fun main(args: Array<String>) {
-    val ru = RunUtils()
-    ru.run(listOf("node", *listOf("index.js").toTypedArray(), null), listOf("LOL", "value", null))
-}*/
