@@ -95,11 +95,7 @@ class RunCommand(
                 setenv(it.first, it.second, 1)
             }
 
-            try {
-                system(command.joinToString(" "))
-            } finally {
-                clearenv()
-            }
+            system(command.joinToString(" "))
         }
     }
 }
