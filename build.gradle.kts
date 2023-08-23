@@ -53,7 +53,7 @@ kotlin {
                 implementation("com.github.ajalt.mordant:mordant:2.0.1")
                 implementation("com.github.ajalt.clikt:clikt:4.1.0")
                 implementation("io.ktor:ktor-client-logging:2.3.2")
-                implementation("com.kgit2:kommand:1.0.2-cmdk")
+                implementation("com.kgit2:kommand:1.0.2")
             }
         }
         val commonMain by getting {
