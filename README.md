@@ -52,6 +52,8 @@ token to be able to access to, and the environments that you want to restrict th
 scope of the token to be either `Read` or `Write`. Do note that, `Write` is not a superset of a `Read` token, and a
 `Write` token does not allow any `Read` operations.
 
+> **TODO** Add a loom/screenshot of the API Access Token Page
+
 Click on "Create" and copy the access token that was generated. Do note that we do not display the access token once
 this panel is collapsed, so make sure you copy the token before dismissing the panel.
 
