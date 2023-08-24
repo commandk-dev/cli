@@ -24,7 +24,7 @@ val environmentOption: ParameterHolder.() -> OptionWithValues<String, String, St
 
 val subTypeOption: ParameterHolder.() -> NullableOption<String, String> = {
     option(
-        "--sub-type",
+        "--app-type",
         help = "Disambiguation for application name, if multiple applications with the same name exists",
     )
         .choice("Service", "CronJob", "Job", "Other")
