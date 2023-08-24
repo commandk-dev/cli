@@ -244,7 +244,7 @@ of the app is different. If you are operating on such an app, you might see the 
 The provided name for the application was not found to be unique, please specify --sub-type to narrow it down
 ```
 
-To disambiguate this, simply specify the type of app you are trying to access:
+To disambiguate this, simply specify the sub-type of app you are trying to access:
 
 ```
 $ cmdk secrets get return-management-service \
@@ -253,7 +253,7 @@ $ cmdk secrets get return-management-service \
      --output-file-name secrets.env
 ```
 
-The type of app can be viewed under the `Settings` tab.
+The sub-type of app can be viewed under the `Settings` tab.
 
 # Working with frameworks
 
