@@ -237,23 +237,23 @@ The app id can be fetched from the side panel under the "Settings" tab, for a gi
 ![image](https://github.com/commandk-dev/cli/assets/136263/f88f0533-e98d-4478-82ec-17d9ffebc0c8)
 
 ### Disambiguating with application names
-To identify multiple artifacts of the same app, CommandK allows the creation of apps with the same name, as long as the "sub-type"
+To identify multiple artifacts of the same app, CommandK allows the creation of apps with the same name, as long as the "app-type"
 of the app is different. If you are operating on such an app, you might see the error message:
 
 ```
-The provided name for the application was not found to be unique, please specify --sub-type to narrow it down
+The provided name for the application was not found to be unique, please specify --app-type to narrow it down
 ```
 
-To disambiguate this, simply specify the sub-type of app you are trying to access:
+To disambiguate this, simply specify the app-type of app you are trying to access:
 
 ```
 $ cmdk secrets get return-management-service \
-     --sub-type CronJob
+     --app-type CronJob
      --environment staging \
      --output-file-name secrets.env
 ```
 
-The sub-type of app can be viewed under the `Settings` tab.
+The Type of the app can be viewed under the `Settings` tab.
 
 # Working with frameworks
 
