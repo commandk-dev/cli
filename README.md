@@ -464,4 +464,8 @@ The following lists the common parameters for the CLI that can be configured:
 
 # Auditing CLI Access
 
-*Section coming soon*
+All activities performed by the CLI are logged under the activity log, with the acting entity being the access token that was used by the CLI. To access the log, simply click on "Activity Log" on the left panel. If there have been recent actions performed via the CLI, their tokens would show up with the actions they performed and the entities the actions operated over:
+
+![Screenshot_20230827_151421](https://github.com/commandk-dev/cli/assets/136263/df99a4b9-d5d7-4f4e-8d5b-ce58318ed327)
+
+Click on any row item to get further details about the logged event.
