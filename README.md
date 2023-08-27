@@ -3,6 +3,8 @@ The CommandK CLI is a command line interface for interacting with the CommandK A
 
 - [CommandK CLI](#commandk-cli)
   * [Download and Install](#download-and-install)
+    + [Homebrew (MacOS)](#homebrew--macos-)
+    + [Linux (or MacOS without brew)](#linux--or-macos-without-brew-)
   * [Setup](#setup)
 - [Operations](#operations)
   * [Getting Secrets](#getting-secrets)
@@ -42,7 +44,7 @@ $ brew install cmdk-cli
 If the installation went through smoothly, you should be able to run:
 
 ```shell
-$ cmdk --help
+$ cmdk version
 ```
 
 ### Linux (or MacOS without brew)
@@ -55,10 +57,10 @@ $ cmdk --help
     $ # You might have to use sudo for the next command
     $ install <archive>/cmdk-linux-x86_64 -m 0555 /usr/local/bin/cmdk
     ```
-If the install went through successfully, you should be able to run:
+If the installion went through successfully, you should be able to run:
 
 ```shell
-$ cmdk --help
+$ cmdk version
 ```
 
 ## Setup
