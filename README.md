@@ -30,18 +30,35 @@ The CommandK CLI is a command line interface for interacting with the CommandK A
 
 ## Download and Install
 
+### Homebrew (MacOS)
+
+To install the commandk cli via `homebrew`, use the CommandK homebrew tap
+
+```shell
+$ brew tap commandk-dev/packages
+$ brew install cmdk-cli
+```
+
+If the installation went through smoothly, you should be able to run:
+
+```shell
+$ cmdk --help
+```
+
+### Linux (or MacOS without brew)
+
 1. The CommandK CLI can be downloaded from the [releases page](https://github.com/commandk-dev/cli/releases)
-2. After downloading the ZIP file, extract its contents using the following command (replace <file> with the actual downloaded file name):
+2. After downloading the ZIP file, extract its contents using the following command (replace <file> with the actual downloaded file name), and install the binary:
     
     ```shell
-    $ tar -xvf /path/to/archive.tar.gz -C /path/to/directory
+    $ unzip /path/to/archive.zip
+    # install <archive>/cmdk-linux-x86_64 -m 0555 /usr/local/bin/cmdk
     ```
-   
-3. Create a symlink to the `cmdk` executable in the `bin` directory of the extracted contents:
+If the install went through successfully, you should be able to run:
 
-    ```shell
-    $ sudo ln -s /path/to/directory/cmdk /usr/local/bin/cmdk
-    ```
+```shell
+$ cmdk --help
+```
 
 ## Setup
 
