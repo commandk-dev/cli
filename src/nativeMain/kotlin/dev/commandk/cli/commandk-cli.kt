@@ -12,6 +12,7 @@ import dev.commandk.cli.commands.secrets.ImportCommand
 import dev.commandk.cli.commands.TestCommandk
 import dev.commandk.cli.commands.secrets.GetCommand
 import dev.commandk.cli.commands.RunCommand
+import dev.commandk.cli.commands.VersionCommand
 import dev.commandk.cli.commands.secrets.SecretsCommand
 import dev.commandk.cli.common.CommonConfigurationValues
 import dev.commandk.cli.common.CommonEnvironmentVars
@@ -25,6 +26,10 @@ import platform.posix.getenv
 class CommandK(
     private val configFileLocation: String?,
 ) : CliktCommand("cmdk", autoCompleteEnvvar = CommonEnvironmentVars.CompletionScript, name = "cmdk") {
+    companion object {
+        const val Version = "0.1.0"
+    }
+
     private val loadedConfig: Map<String, String>
     private val configPropertiesLoader = ConfigPropertiesLoader()
     private val apiAccessToken by option(help = "The API Access Token used to make API calls", envvar = CommonEnvironmentVars.ApiAccessToken)
@@ -75,6 +80,7 @@ val subcommands = emptyList<CliktCommand>() +
         SecretsCommand()
             .subcommands(ImportCommand(commandKApiProvider), GetCommand(commandKApiProvider)),
         RunCommand(commandKApiProvider),
+        VersionCommand()
     )
 
 @OptIn(ExperimentalForeignApi::class)
