@@ -52,7 +52,8 @@ $ cmdk --help
     
     ```shell
     $ unzip /path/to/archive.zip
-    # install <archive>/cmdk-linux-x86_64 -m 0555 /usr/local/bin/cmdk
+    $ # You might have to use sudo for the next command
+    $ install <archive>/cmdk-linux-x86_64 -m 0555 /usr/local/bin/cmdk
     ```
 If the install went through successfully, you should be able to run:
 
