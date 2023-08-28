@@ -3,8 +3,8 @@ The CommandK CLI is a command line interface for interacting with the CommandK A
 
 - [CommandK CLI](#commandk-cli)
   * [Download and Install](#download-and-install)
-    + [Homebrew (MacOS)](#homebrew--macos)
-    + [Linux (or MacOS without brew)](#linux--or-macos-without-brew)
+    + [Homebrew (MacOS)](#homebrew-macos)
+    + [Linux (or MacOS without brew)](#linux-or-macos-without-brew)
   * [Setup](#setup)
 - [Operations](#operations)
   * [Getting Secrets](#getting-secrets)
