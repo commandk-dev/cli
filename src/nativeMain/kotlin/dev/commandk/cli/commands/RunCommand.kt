@@ -10,7 +10,6 @@ import com.github.ajalt.clikt.parameters.groups.defaultByName
 import com.github.ajalt.clikt.parameters.groups.groupChoice
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.mordant.rendering.TextColors
-import com.kgit2.process.Command
 import dev.commandk.cli.api.CommandKApi
 import dev.commandk.cli.common.environmentOption
 import dev.commandk.cli.common.identifierTypeOption
@@ -23,7 +22,6 @@ import dev.commandk.cli.helpers.FormatUtil
 import dev.commandk.cli.models.CliError
 import dev.commandk.cli.options.EnvVarRunType
 import dev.commandk.cli.options.FileStoreRunType
-import platform.posix.clearenv
 import platform.posix.setenv
 import platform.posix.system
 
