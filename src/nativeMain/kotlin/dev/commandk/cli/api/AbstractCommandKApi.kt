@@ -50,7 +50,7 @@ abstract class AbstractCommandKApi(
     @OptIn(ExperimentalNativeApi::class)
     private val CliUserAgentPlugin = createClientPlugin("CliUserAgentPlugin") {
         onRequest { request, _ ->
-            request.headers.append("User-Agent", "CommandK CLI/${CommandK.Version} os: ${osFamily.name}, arch: ${Platform.cpuArchitecture.name}")
+            request.headers.append("User-Agent", "${CommandK.ApplicationName}/${CommandK.Version} os: ${osFamily.name}, arch: ${Platform.cpuArchitecture.name}")
         }
     }
 
