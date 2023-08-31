@@ -1,9 +1,13 @@
 package dev.commandk.cli.context
 
 import arrow.core.Either
+import dev.commandk.cli.common.CommonEnvironmentVars
 import dev.commandk.cli.models.CliError
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.toKString
 import kotlinx.coroutines.runBlocking
 import platform.posix.exit
+import platform.posix.getenv
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
 
@@ -33,15 +37,20 @@ fun <T> CommonContext.executeCliCommand(block: suspend () -> Either<CliError, T>
                 .fold(ifLeft = {
                     it
                 }, ifRight = { null })
-        } catch (e: RuntimeException) {
+        } catch (e: Exception) {
             e
         }
     }?.let { handleException(it) }
 }
 
-private fun CommonContext.handleException(runtimeException: RuntimeException) {
+@OptIn(ExperimentalForeignApi::class)
+private fun CommonContext.handleException(exception: Exception) {
     terminal.println("Received an error, exiting", stderr = true)
-    terminal.println("  Message - ${runtimeException.message}")
+    terminal.println("  Message - ${exception.message ?: "Unknown error occurred, run with CMDK_DEBUG_MODE=true to print stacktrace"}")
+
+    if (getenv(CommonEnvironmentVars.Internals.EnableDebugMode)?.toKString() == "true") {
+        exception.printStackTrace()
+    }
     exit(1)
 }
 

@@ -8,5 +8,6 @@ object CommonEnvironmentVars {
 
     object Internals {
         const val EnableHttpLogging = "CMDK_INTERNAL_ENABLE_HTTP_LOGGING"
+        const val EnableDebugMode = "CMDK_DEBUG_MODE"
     }
 }
