@@ -28,7 +28,7 @@ class CommandK(
 ) : CliktCommand("cmdk", autoCompleteEnvvar = CommonEnvironmentVars.CompletionScript, name = "cmdk") {
     companion object {
         const val ApplicationName = "commandk-cli"
-        const val Version = "0.1.0"
+        const val Version = "0.1.1"
     }
 
     private val loadedConfig: Map<String, String>
