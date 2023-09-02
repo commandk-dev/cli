@@ -7,7 +7,6 @@ import arrow.core.raise.either
 import arrow.core.right
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
-import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.mordant.rendering.TextColors
@@ -15,7 +14,6 @@ import dev.commandk.cli.api.CommandKApi
 import dev.commandk.cli.common.applicationNameArgument
 import dev.commandk.cli.common.environmentOption
 import dev.commandk.cli.common.identifierTypeOption
-import dev.commandk.cli.common.subTypeOption
 import dev.commandk.cli.context.CommonContext
 import dev.commandk.cli.context.cc
 import dev.commandk.cli.context.executeCliCommand
@@ -34,7 +32,6 @@ class ImportCommand(
         help = "The name of the application to import secrets into"
     )
     private val environment by environmentOption()
-    private val applicationSubType by subTypeOption()
     private val identifierType by identifierTypeOption()
     private val importFile by option("--import-file", help = "The file to import data from")
         .required()
@@ -55,7 +52,7 @@ class ImportCommand(
             val providerId = getDefaultProviderId().bind()
 
             val applicationId = if (identifierType == "Name") {
-                commandKApiProvider(commonContext).getCatalogApp(applicationName, applicationSubType)
+                commandKApiProvider(commonContext).getCatalogApp(applicationName)
                     .bind()
                     .id
             } else {

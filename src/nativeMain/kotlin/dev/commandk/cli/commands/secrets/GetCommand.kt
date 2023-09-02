@@ -11,11 +11,9 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import dev.commandk.cli.api.CommandKApi
 import dev.commandk.cli.common.applicationNameArgument
-import dev.commandk.cli.common.applicationNameOption
 import dev.commandk.cli.common.environmentOption
 import dev.commandk.cli.common.identifierTypeOption
 import dev.commandk.cli.common.outputFormatOption
-import dev.commandk.cli.common.subTypeOption
 import dev.commandk.cli.context.CommonContext
 import dev.commandk.cli.context.cc
 import dev.commandk.cli.context.executeCliCommand
@@ -41,7 +39,6 @@ class GetCommand(
         help = "The name of the file to write secrets to"
     ).required()
     private val identifierType by identifierTypeOption()
-    private val applicationSubType by subTypeOption()
     override fun run() {
         commonContext.executeCliCommand {
             runInternal()
@@ -53,7 +50,7 @@ class GetCommand(
             val environment = getEnvironment().bind()
 
             val applicationId = if (identifierType == "Name") {
-                commandKApiProvider(commonContext).getCatalogApp(applicationName, applicationSubType)
+                commandKApiProvider(commonContext).getCatalogApp(applicationName)
                     .bind()
                     .id
             } else {

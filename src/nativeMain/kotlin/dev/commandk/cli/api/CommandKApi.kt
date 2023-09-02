@@ -10,7 +10,7 @@ import dev.commandk.cli.models.NetworkError
 import dev.commandk.cli.models.CommandKAppRenderedSecrets
 
 interface CommandKApi {
-    suspend fun getCatalogApp(appName: String, catalogAppSubtype: String?): Either<CliError, CommandKApp>
+    suspend fun getCatalogApp(appName: String): Either<CliError, CommandKApp>
     suspend fun getProviders(): Either<NetworkError, CommandKProviders>
     suspend fun getEnvironments(): Either<NetworkError, CommandKEnvironments>
     suspend fun getRenderedSecrets(

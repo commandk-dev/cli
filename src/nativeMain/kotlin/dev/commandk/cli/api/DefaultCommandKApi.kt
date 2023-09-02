@@ -7,11 +7,9 @@ import arrow.core.right
 import com.github.ajalt.mordant.rendering.TextColors
 import dev.commandk.cli.context.CommonContext
 import dev.commandk.cli.context.cc
-import dev.commandk.cli.models.CentralDataError
 import dev.commandk.cli.models.CliError
 import dev.commandk.cli.models.CommandKApp
 import dev.commandk.cli.models.CommandKAppRenderedSecrets
-import dev.commandk.cli.models.CommandKAppSecret
 import dev.commandk.cli.models.CommandKAppSecretDescriptor
 import dev.commandk.cli.models.CommandKAppSecretValue
 import dev.commandk.cli.models.CommandKCreateAppSecretRequest
@@ -19,7 +17,6 @@ import dev.commandk.cli.models.CommandKEnvironment
 import dev.commandk.cli.models.CommandKEnvironments
 import dev.commandk.cli.models.CommandKKeyValueAppSecretValue
 import dev.commandk.cli.models.CommandKProviders
-import dev.commandk.cli.models.CommandKSetAppSecretValuesRequest
 import dev.commandk.cli.models.NetworkError
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -28,37 +25,19 @@ import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonPrimitive
 
 class DefaultCommandKApi(
     private val commonContext: CommonContext,
 ) : AbstractCommandKApi(commonContext) {
-    override suspend fun getCatalogApp(appName: String, catalogAppSubtype: String?): Either<CliError, CommandKApp> {
+    override suspend fun getCatalogApp(appName: String): Either<CliError, CommandKApp> {
         return apiCall {
-            val subTypeParam = catalogAppSubtype?.let { subType -> "&catalogAppSubType=$subType" } ?: ""
-            val response = get("/apps/${appName}?identifierType=Name$subTypeParam")
+            val response = get("/apps/${appName}?identifierType=Name")
 
             if (response.status.value in 200 .. 299) {
                 response.body<CommandKApp>().right()
             } else {
-                if (response.status.value == 400) {
-                    try {
-                        val error = (deserializeResponseError(response).get("errorType") as? JsonPrimitive)
-                            ?.content
-                        if (error == "DataEntityNonSingular") {
-                            CentralDataError.ApplicationNameNotUnique().left()
-                        } else {
-                            NetworkError.GenericNetworkError("Could not decode response from the network")
-                                .left()
-                        }
-                    } catch (e: Exception) {
-                        NetworkError.GenericNetworkError("Could not decode response from the network")
-                            .left()
-                    }
-                } else {
-                    NetworkError.GenericNetworkError("An error occured trying to fetch the application." +
-                        " Server response - ${decodeResponseError(response)}").left()
-                }
+                NetworkError.GenericNetworkError("An error occured trying to fetch the application." +
+                    " Server response - ${decodeResponseError(response)}").left()
             }
         }
     }

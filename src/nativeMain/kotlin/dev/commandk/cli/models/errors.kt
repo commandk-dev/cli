@@ -14,12 +14,6 @@ sealed class CentralDataError : CliError() {
         override val message: String = "No environment with identifier $environmentIdentifier was found",
         override val cause: Exception? = null,
     ) : CentralDataError()
-
-    data class ApplicationNameNotUnique(
-        override val message: String = "The provided name for the application was not found to be unique, please" +
-            " specify --app-type to narrow it down",
-        override val cause: Exception? = null
-    ) : CentralDataError()
 }
 
 sealed class NetworkError : CliError() {

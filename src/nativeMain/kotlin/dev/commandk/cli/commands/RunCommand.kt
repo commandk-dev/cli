@@ -13,7 +13,6 @@ import com.github.ajalt.mordant.rendering.TextColors
 import dev.commandk.cli.api.CommandKApi
 import dev.commandk.cli.common.environmentOption
 import dev.commandk.cli.common.identifierTypeOption
-import dev.commandk.cli.common.subTypeOption
 import dev.commandk.cli.context.CommonContext
 import dev.commandk.cli.context.cc
 import dev.commandk.cli.context.executeCliCommand
@@ -32,7 +31,6 @@ class RunCommand(
     private val formatUtil = FormatUtil()
     private val applicationName by argument(help = "The application name to get secrets for", name = "application-name")
     private val environment by environmentOption()
-    private val applicationSubType by subTypeOption()
     private val identifierType by identifierTypeOption()
     private val command by argument(
         help = "The command to run the application",
@@ -58,7 +56,7 @@ class RunCommand(
             cc().writeLine("✅ Using environment ${environment.name} [id: ${environment.id}]")
 
             val applicationId = if (identifierType == "Name") {
-                commandKApiProvider(commonContext).getCatalogApp(applicationName, applicationSubType)
+                commandKApiProvider(commonContext).getCatalogApp(applicationName)
                     .bind()
                     .id
             } else {
