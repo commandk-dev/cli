@@ -71,7 +71,7 @@ token to be able to access to, and the environments that you want to restrict th
 scope of the token to be either `Read` or `Write`. Do note that, `Write` is not a superset of a `Read` token, and a
 `Write` token does not allow any `Read` operations.
 
-> **TODO** Add a loom/screenshot of the API Access Token Page
+![Screenshot_20230902_154243](https://github.com/commandk-dev/cli/assets/136263/db9382d7-78f1-4e60-8660-68be34130e62)
 
 Click on "Create" and copy the access token that was generated. Do note that we do not display the access token once
 this panel is collapsed, so make sure you copy the token before dismissing the panel.
