@@ -48,7 +48,18 @@ $ cmdk version
 
 ### Linux (or MacOS without brew)
 
-1. The CommandK CLI can be downloaded from the [releases page](https://github.com/commandk-dev/cli/releases)
+1. The CommandK CLI can be downloaded from the [releases page](https://github.com/commandk-dev/cli/releases), or get the latest using:
+
+```shell
+# For Linux
+curl https://github.com/commandk-dev/cli/releases/download/v0.1.1/cmdk-cli-client-0.1.1-linux-x86_64.zip
+```
+
+```shell
+# For MacOS
+curl https://github.com/commandk-dev/cli/releases/download/v0.1.1/cmdk-cli-client-0.1.1-osx-x86_64.zip
+```
+  
 2. After downloading the ZIP file, extract its contents using the following command (replace <file> with the actual downloaded file name), and install the binary:
     
     ```shell
@@ -56,7 +67,7 @@ $ cmdk version
     $ # You might have to use sudo for the next command
     $ install <archive>/cmdk-linux-x86_64 -m 0555 /usr/local/bin/cmdk
     ```
-If the installion went through successfully, you should be able to run:
+If the installation went through successfully, you should be able to run:
 
 ```shell
 $ cmdk version
