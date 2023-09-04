@@ -18,7 +18,7 @@ class FileStoreRunType : RunType("file-store") {
 
     val fileName by option(
         "--file-name",
-        help = "The location of the file to read from",
+        help = "The location of the file to write secrets to, before executing the command"
     ).required()
 }
 

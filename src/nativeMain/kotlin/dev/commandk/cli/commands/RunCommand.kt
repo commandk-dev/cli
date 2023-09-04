@@ -1,21 +1,18 @@
-package dev.commandk.cli.commands.secrets
+package dev.commandk.cli.commands
 
 import arrow.core.Either
 import arrow.core.raise.either
-import arrow.core.right
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
 import com.github.ajalt.clikt.parameters.arguments.argument
+import com.github.ajalt.clikt.parameters.arguments.multiple
 import com.github.ajalt.clikt.parameters.groups.defaultByName
 import com.github.ajalt.clikt.parameters.groups.groupChoice
 import com.github.ajalt.clikt.parameters.options.option
-import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.mordant.rendering.TextColors
-import com.kgit2.process.Command
 import dev.commandk.cli.api.CommandKApi
 import dev.commandk.cli.common.environmentOption
 import dev.commandk.cli.common.identifierTypeOption
-import dev.commandk.cli.common.subTypeOption
 import dev.commandk.cli.context.CommonContext
 import dev.commandk.cli.context.cc
 import dev.commandk.cli.context.executeCliCommand
@@ -24,22 +21,20 @@ import dev.commandk.cli.helpers.FormatUtil
 import dev.commandk.cli.models.CliError
 import dev.commandk.cli.options.EnvVarRunType
 import dev.commandk.cli.options.FileStoreRunType
-import okio.FileSystem
-import okio.Path.Companion.toPath
+import platform.posix.setenv
+import platform.posix.system
 
 class RunCommand(
-    private val commandKApiProvider: (CommonContext) -> CommandKApi
+    private val commandKApiProvider: (CommonContext) -> CommandKApi,
 ) : CliktCommand("Fetch secrets, and invoke the application runner", name = "run") {
     private val commonContext by requireObject<CommonContext>()
     private val formatUtil = FormatUtil()
     private val applicationName by argument(help = "The application name to get secrets for", name = "application-name")
     private val environment by environmentOption()
-    private val applicationSubType by subTypeOption()
     private val identifierType by identifierTypeOption()
-    private val applicationRunCommand by option(
-        "--command",
+    private val command by argument(
         help = "The command to run the application",
-    ).required()
+    ).multiple()
     private val commonUtils = CommonUtils(commandKApiProvider)
 
 
@@ -61,7 +56,7 @@ class RunCommand(
             cc().writeLine("✅ Using environment ${environment.name} [id: ${environment.id}]")
 
             val applicationId = if (identifierType == "Name") {
-                commandKApiProvider(commonContext).getCatalogApp(applicationName, applicationSubType)
+                commandKApiProvider(commonContext).getCatalogApp(applicationName)
                     .bind()
                     .id
             } else {
@@ -74,46 +69,29 @@ class RunCommand(
                 environment
             ).bind()
 
-            when (runType) {
+            val envsToPopulate = when (runType) {
                 is FileStoreRunType -> {
                     val fileFormat = (runType as FileStoreRunType).fileFormat
                     val fileName = (runType as FileStoreRunType).fileName
                     val secrets = formatUtil.formatSecrets(renderedSecrets.secrets, fileFormat)
-                    writeToFile(fileName, secrets).bind()
+                    commonUtils.writeToFile(fileName, secrets).bind()
                     cc().writeLine("✅ Secrets fetched and written to file ${TextColors.green(fileName)}")
+                    emptyList()
                 }
 
                 is EnvVarRunType ->  {
                     cc().writeLine("✅ Secrets fetched and will be set as environment variables")
+                    renderedSecrets.secrets.map { renderedSecret ->
+                        renderedSecret.key to renderedSecret.serializedValue
+                    }
                 }
             }
 
-            val args = applicationRunCommand.split(" ")
-            val command = args.first()
-            val commandArgs = args.drop(1)
-            Command(command)
-                .let {
-                    when (runType) {
-                        is EnvVarRunType -> it.envs(envs = renderedSecrets.secrets.map { (key, value) ->
-                            key to value
-                        }.toTypedArray())
+            envsToPopulate.forEach {
+                setenv(it.first, it.second, 1)
+            }
 
-                        is FileStoreRunType -> {
-                            it
-                        }
-                    }
-                }
-                .args(args = commandArgs.toTypedArray())
-                .spawn()
-                .wait()
+            system(command.joinToString(" "))
         }
-    }
-
-    private fun writeToFile(filePath: String, data: String): Either<CliError, Unit> {
-        // Write the secrets to the specified file
-        FileSystem.SYSTEM.write(filePath.toPath()) {
-            writeUtf8(data)
-        }
-        return Unit.right()
     }
 }

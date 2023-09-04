@@ -1,5 +1,6 @@
 package dev.commandk.cli.api
 
+import dev.commandk.cli.CommandK
 import dev.commandk.cli.common.CommonEnvironmentVars
 import dev.commandk.cli.context.AccessAuthorizationParameters
 import dev.commandk.cli.context.CommonContext
@@ -11,6 +12,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.*
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.Url
+import io.ktor.http.append
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.utils.io.core.use
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -18,6 +20,8 @@ import kotlinx.cinterop.toKString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import platform.posix.getenv
+import kotlin.experimental.ExperimentalNativeApi
+import kotlin.native.Platform.osFamily
 
 abstract class AbstractCommandKApi(
     private val commonContext: CommonContext,
@@ -41,6 +45,13 @@ abstract class AbstractCommandKApi(
                 })
             }
         }.use { client -> client.block() }
+    }
+
+    @OptIn(ExperimentalNativeApi::class)
+    private val CliUserAgentPlugin = createClientPlugin("CliUserAgentPlugin") {
+        onRequest { request, _ ->
+            request.headers.append("User-Agent", "${CommandK.ApplicationName}/${CommandK.Version} os: ${osFamily.name}, arch: ${Platform.cpuArchitecture.name}")
+        }
     }
 
     private val AccessTokenHeaderPlugin = createClientPlugin("AccessTokenHeaderPlugin") {

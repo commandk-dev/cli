@@ -11,8 +11,10 @@ import dev.commandk.cli.api.DefaultCommandKApi
 import dev.commandk.cli.commands.secrets.ImportCommand
 import dev.commandk.cli.commands.TestCommandk
 import dev.commandk.cli.commands.secrets.GetCommand
-import dev.commandk.cli.commands.secrets.RunCommand
+import dev.commandk.cli.commands.RunCommand
+import dev.commandk.cli.commands.VersionCommand
 import dev.commandk.cli.commands.secrets.SecretsCommand
+import dev.commandk.cli.common.CommonConfigurationValues
 import dev.commandk.cli.common.CommonEnvironmentVars
 import dev.commandk.cli.context.AccessAuthorizationParameters
 import dev.commandk.cli.context.CommonContext
@@ -24,6 +26,11 @@ import platform.posix.getenv
 class CommandK(
     private val configFileLocation: String?,
 ) : CliktCommand("cmdk", autoCompleteEnvvar = CommonEnvironmentVars.CompletionScript, name = "cmdk") {
+    companion object {
+        const val ApplicationName = "commandk-cli"
+        const val Version = "0.1.1"
+    }
+
     private val loadedConfig: Map<String, String>
     private val configPropertiesLoader = ConfigPropertiesLoader()
     private val apiAccessToken by option(help = "The API Access Token used to make API calls", envvar = CommonEnvironmentVars.ApiAccessToken)
@@ -31,13 +38,17 @@ class CommandK(
     private val apiEndpoint by option(help = "The HTTPs endpoint for the CommandK API Server", envvar = CommonEnvironmentVars.ApiEndpoint)
         .required()
 
+    private val baseConfig = mapOf(
+        "api-endpoint" to CommonConfigurationValues.DefaultApiEndpoint
+    )
+
     init {
         loadedConfig = configFileLocation?.let { configFile -> configPropertiesLoader.loadProperties(configFile) }
             ?: emptyMap()
 
         context {
             configFileLocation?.let {
-                valueSource = MapValueSource(loadedConfig)
+                valueSource = MapValueSource(baseConfig + loadedConfig)
             }
         }
     }
@@ -70,6 +81,7 @@ val subcommands = emptyList<CliktCommand>() +
         SecretsCommand()
             .subcommands(ImportCommand(commandKApiProvider), GetCommand(commandKApiProvider)),
         RunCommand(commandKApiProvider),
+        VersionCommand()
     )
 
 @OptIn(ExperimentalForeignApi::class)

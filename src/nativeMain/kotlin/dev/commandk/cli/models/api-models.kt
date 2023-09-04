@@ -66,6 +66,13 @@ data class CommandKAppSecret(
     @EncodeDefault val purposeType: String = "Other"
 )
 
+@Serializable
+data class CommandKAppSecretDescriptor(
+    val id: String,
+    val name: String,
+    val slug: String,
+)
+
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable
 data class CommandKAppSecretValue(
