@@ -84,7 +84,7 @@ token to be able to access to, and the environments that you want to restrict th
 scope of the token to be either `Read` or `Write`. Do note that, `Write` is not a superset of a `Read` token, and a
 `Write` token does not allow any `Read` operations.
 
-![Screenshot_20230902_154243](https://github.com/commandk-dev/cli/assets/136263/db9382d7-78f1-4e60-8660-68be34130e62)
+![Screenshot_20230904_173800](https://github.com/commandk-dev/cli/assets/136263/27659a8e-77d1-4699-b2f1-104c13b5c120)
 
 Click on "Create" and copy the access token that was generated. Do note that we do not display the access token once
 this panel is collapsed, so make sure you copy the token before dismissing the panel.
@@ -266,7 +266,7 @@ $ cmdk secrets get LDJML-6x65-saP5d-7jBL \
 
 The app id can be fetched from the side panel under the "Settings" tab, for a given app:
 
-![image](https://github.com/commandk-dev/cli/assets/136263/f88f0533-e98d-4478-82ec-17d9ffebc0c8)
+![image](https://github.com/commandk-dev/cli/assets/136263/f178285f-622a-467c-b5bb-f32acac0a988)
 
 # Working with frameworks
 
@@ -461,6 +461,6 @@ The following lists the common parameters for the CLI that can be configured:
 
 All activities performed by the CLI are logged under the activity log, with the acting entity being the access token that was used by the CLI. To access the log, simply click on "Activity Log" on the left panel. If there have been recent actions performed via the CLI, their tokens would show up with the actions they performed and the entities the actions operated over:
 
-![Screenshot_20230827_151421](https://github.com/commandk-dev/cli/assets/136263/df99a4b9-d5d7-4f4e-8d5b-ce58318ed327)
+![Screenshot_20230904_174035](https://github.com/commandk-dev/cli/assets/136263/abd2b636-edd4-47c9-8e01-04e95eb9088f)
 
 Click on any row item to get further details about the logged event.
