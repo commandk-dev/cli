@@ -1,20 +1,14 @@
 package dev.commandk.cli.commands
 
-import arrow.core.right
 import com.github.ajalt.clikt.core.CliktCommand
-import com.github.ajalt.clikt.core.requireObject
+import com.github.ajalt.mordant.terminal.Terminal
 import dev.commandk.cli.CommandK
-import dev.commandk.cli.context.CommonContext
-import dev.commandk.cli.context.cc
-import dev.commandk.cli.context.executeCliCommand
 
-class VersionCommand : CliktCommand("Get the current CommandK CLI version") {
-    private val commonContext by requireObject<CommonContext>()
+class VersionCommand(
+    private val terminal: Terminal
+) : CliktCommand("Get the current CommandK CLI version") {
     override fun run() {
-        commonContext.executeCliCommand {
-            cc().writeLine("CommandK / CLI")
-            cc().writeLine("  Version - ${CommandK.Version}")
-            Unit.right()
-        }
+        terminal.println("CommandK / CLI")
+        terminal.println("  Version - ${CommandK.Version}")
     }
 }
