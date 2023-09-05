@@ -52,14 +52,14 @@ $ cmdk version
 
 ```shell
 # For Linux
-curl -L https://github.com/commandk-dev/cli/releases/download/v0.1.2/cmdk-cli-client-0.1.2-linux-x86_64.zip \
-    --output cmdk-cli-client-0.1.2-linux-x86_64.zip
+curl -L https://github.com/commandk-dev/cli/releases/download/v0.1.3/cmdk-cli-client-0.1.3-linux-x86_64.zip \
+    --output cmdk-cli-client-0.1.3-linux-x86_64.zip
 ```
 
 ```shell
 # For MacOS
-curl -L https://github.com/commandk-dev/cli/releases/download/v0.1.2/cmdk-cli-client-0.1.2-osx-x86_64.zip \
-    --output cmdk-cli-client-0.1.2-osx-x86_64.zip
+curl -L https://github.com/commandk-dev/cli/releases/download/v0.1.3/cmdk-cli-client-0.1.3-osx-x86_64.zip \
+    --output cmdk-cli-client-0.1.3-osx-x86_64.zip
 ```
   
 2. After downloading the ZIP file, extract its contents using the following command (replace <file> with the actual downloaded file name), and install the binary:
