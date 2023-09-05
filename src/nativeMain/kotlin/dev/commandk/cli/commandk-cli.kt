@@ -3,6 +3,7 @@ package dev.commandk.cli // ktlint-disable filename
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.context
 import com.github.ajalt.clikt.core.subcommands
+import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.sources.MapValueSource
@@ -19,6 +20,7 @@ import dev.commandk.cli.common.CommonEnvironmentVars
 import dev.commandk.cli.context.AccessAuthorizationParameters
 import dev.commandk.cli.context.CommonContext
 import dev.commandk.cli.services.ConfigPropertiesLoader
+import io.ktor.http.content.Version
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.toKString
 import platform.posix.getenv
@@ -28,7 +30,7 @@ class CommandK(
 ) : CliktCommand("cmdk", autoCompleteEnvvar = CommonEnvironmentVars.CompletionScript, name = "cmdk") {
     companion object {
         const val ApplicationName = "commandk-cli"
-        const val Version = "0.1.1"
+        const val Version = "0.1.2"
     }
 
     private val loadedConfig: Map<String, String>
@@ -81,13 +83,20 @@ val subcommands = emptyList<CliktCommand>() +
         SecretsCommand()
             .subcommands(ImportCommand(commandKApiProvider), GetCommand(commandKApiProvider)),
         RunCommand(commandKApiProvider),
-        VersionCommand()
+        VersionCommand(Terminal())
     )
 
 @OptIn(ExperimentalForeignApi::class)
-fun main(args: Array<String>) = CommandK(
-    (
-        (getenv("CMDK_CONFIG_FILE")?.toKString())
-            ?: (getenv("HOME")?.let { "${it.toKString()}/.commandk.config.json" })
-        ),
-).subcommands(subcommands).main(args)
+fun main(args: Array<String>) {
+    if (args[0] == "version") {
+        VersionCommand(Terminal())
+            .run()
+    } else {
+        CommandK(
+            (
+                (getenv("CMDK_CONFIG_FILE")?.toKString())
+                    ?: (getenv("HOME")?.let { "${it.toKString()}/.commandk.config.json" })
+                ),
+        ).subcommands(subcommands).main(args)
+    }
+}
