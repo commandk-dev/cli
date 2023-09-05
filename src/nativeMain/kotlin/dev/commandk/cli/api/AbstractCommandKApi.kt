@@ -7,12 +7,12 @@ import dev.commandk.cli.context.CommonContext
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.curl.Curl
+import io.ktor.client.plugins.*
 import io.ktor.client.plugins.api.createClientPlugin
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.*
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.Url
-import io.ktor.http.append
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.utils.io.core.use
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -26,7 +26,7 @@ import kotlin.native.Platform.osFamily
 abstract class AbstractCommandKApi(
     private val commonContext: CommonContext,
 ) : CommandKApi {
-    @OptIn(ExperimentalForeignApi::class)
+    @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
     protected suspend fun <T> apiCall(block: suspend HttpClient.() -> T): T {
         return HttpClient(Curl) {
             expectSuccess = false
@@ -44,22 +44,20 @@ abstract class AbstractCommandKApi(
                     ignoreUnknownKeys = true
                 })
             }
+
+            install(UserAgent) {
+                agent = "${CommandK.ApplicationName}/${CommandK.Version} os: ${osFamily.name}, arch: ${Platform.cpuArchitecture.name}"
+            }
         }.use { client -> client.block() }
     }
 
     @OptIn(ExperimentalNativeApi::class)
-    private val CliUserAgentPlugin = createClientPlugin("CliUserAgentPlugin") {
-        onRequest { request, _ ->
-            request.headers.append("User-Agent", "${CommandK.ApplicationName}/${CommandK.Version} os: ${osFamily.name}, arch: ${Platform.cpuArchitecture.name}")
-        }
-    }
-
     private val AccessTokenHeaderPlugin = createClientPlugin("AccessTokenHeaderPlugin") {
         onRequest { request, _ ->
 
             //If there is no scheme present, resolve to a default scheme
-            val resolvedApiEndpoint = if(!commonContext.apiEndpoint.contains("://")) {
-               "https://${commonContext.apiEndpoint}"
+            val resolvedApiEndpoint = if (!commonContext.apiEndpoint.contains("://")) {
+                "https://${commonContext.apiEndpoint}"
             } else {
                 commonContext.apiEndpoint
             }
@@ -99,8 +97,8 @@ abstract class AbstractCommandKApi(
         return Json.decodeFromString<JsonObject>(response.body())
     }
 
-    suspend fun decodeResponseError(response: HttpResponse) : String {
-        val responseString =  response.body<String>()
+    suspend fun decodeResponseError(response: HttpResponse): String {
+        val responseString = response.body<String>()
         return try {
             val responseStructured = Json.decodeFromString<JsonObject>(responseString)
             return "RequestId=${responseStructured["requestId"]}," +
