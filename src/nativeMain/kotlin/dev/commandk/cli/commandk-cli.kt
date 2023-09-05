@@ -88,7 +88,7 @@ val subcommands = emptyList<CliktCommand>() +
 
 @OptIn(ExperimentalForeignApi::class)
 fun main(args: Array<String>) {
-    if (args[0] == "version") {
+    if (args.size > 1 && args[0] == "version") {
         VersionCommand(Terminal())
             .run()
     } else {
