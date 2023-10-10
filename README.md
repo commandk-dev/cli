@@ -391,7 +391,7 @@ $ cmdk run <application-name> --environment development -- python server.py serv
 Simply use the CommandK CLI to execute your usual run command, an example for python is as shown below:
 
 ```shell
-$ cmdk run <application-name> --environment development -- python server.py server
+$ cmdk run <application-name> --environment development -- python server.py
 ```
 
 ## Laravel
